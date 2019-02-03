@@ -1,0 +1,134 @@
+\documentclass[12pt,twoside]{article}
+
+\usepackage{subfig}
+\newcommand{\reporttitle}{417 Advanced Graphics}
+\newcommand{\reportauthor}{Jinwei Zhang, Yuan Zhu}
+\newcommand{\reporttype}{Coursework} 
+\newcommand{\cid}{01540854,01531935}
+
+% include files that load packages and define macros
+\input{includes} % various packages needed for maths etc.
+\input{notation} % short-hand notation and macros
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+% front page 
+\input{titlepage}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Main document
+\section{Assemble an HDR Image and tonemap for display}
+    this is yuan zhu 's part
+    
+
+
+
+\section{Implement simple Image Based Lighting}
+    In this section, we are given an outdoor (urban) lighting environment in lat-long format (.pfm) we need to create an image m of 511x511 resolution containing a mirror ball sphere lit by the lat-long map. \\\\
+    The basic algorithm is shown as follow: 
+    \begin{enumerate}[1)]
+        \item Creating a circle image of diameter 511, First create a square a square image of length and height 511 then set the pixel outside the circle to be black (RGB 0.0) 
+        \item for the pixel inside the circle, calculate the normal vector  $\vec{n}(x,y,z)$
+        \item After that calculate the reflection vector by using \\
+         \begin{align} 
+            \vec r = 2*(\mat{n} * \mat{v})*\mat{n} - \mat{v}. 
+        \end{align}
+        \item Then, mapping the Cartesian coordinate system to Spherical coordinate system using the equation below:
+        \begin{align} 
+            \begin{aligned} R & = \sqrt { x ^ { 2 } + y ^ { 2 } + z ^ { 2 } } = 255.5 (Radius)
+            \\ \theta & = \arctan \left( \frac { \sqrt { x ^ { 2 } + z ^ { 2 } } } { y } \right) = \arccos \left( \frac { y } { \sqrt { x ^ { 2 } + y ^ { 2 } + z ^ { 2 } } } \right) \\ \phi & = \arctan \left( \frac { x } { z } \right) = \arccos \left( \frac { z } { \sqrt { x ^ { 2 } + z ^ { 2 } } } \right) = \arcsin \left( \frac { x } { \sqrt { x ^ { 2 } + z ^ { 2 } } } \right) \end{aligned}
+        \end{align}\\
+    \begin{figure}[H]
+        \centering % this centers the figure
+        \includegraphics[width=10cm, height=12cm]{./figures/Capture.JPG} % this includes the figure and specifies that it should span 0.7 times the horizontal size of the page
+        \caption{This is a draft.} % caption of the figure
+        \label{fig:imperial figure} % a label. When we refer to this label from the text, the figure number is included automatically
+    \end{figure}
+    % Fig.~\ref{fig:imperial figure} shows the Imperial College logo. 
+        
+        \item Coordinates Y is up, X is pointing right and Z is pointing out of the XY plane. For spherical coordinates of the lat-long map, Width varies along $\phi (0 , 2\pi)$ , and Height varies along $\theta (0 ,\pi)$.
+        \item Once we get the vector in spherical coordinates we can map the lat-long map onto the circle using the coordinate system above.
+        
+        the outcome is as below.
+        \begin{figure}[H]
+          \centering % this centers the figure
+            \includegraphics[width= 10cm, height= 10cm]{./figures/result2.jpg} 
+            \caption{This is a figure.} % caption of the figure
+            \label{fig:imperial figure} % a label. When we refer to this label from the text, the figure number is included automatically
+        \end{figure}
+        
+        \item the gamma correction outcome is: 
+        \begin{figure}
+            \begin{tabular}{cccc}
+            \subfloat[G=1.4 S=3]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma14Stop3.jpg}} &
+            \subfloat[G=1.4 S=5]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma14Stop5.jpg}} &
+            \subfloat[G=1.4 S=7]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma14Stop7.jpg}} &
+            \subfloat[G=1.4 S=9]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma14Stop9.jpg}}\\
+            \subfloat[G=1.8 S=3]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma18Stop3.jpg}} &
+            \subfloat[G=1.8 S=5]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma18Stop5.jpg}} &
+            \subfloat[G=1.8 S=7]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma18Stop7.jpg}} &
+            \subfloat[G=1.8 S=9]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma18Stop9.jpg}}\\
+            \subfloat[G=2.2 S=3]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma22Stop3.jpg}} &
+            \subfloat[G=2.2 S=5]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma22Stop5.jpg}} &
+            \subfloat[G=2.2 S=7]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma22Stop7.jpg}} &
+            \subfloat[G=2.2 S=9]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma22Stop9.jpg}}\\
+            \subfloat[G=2.6 S=3]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma26Stop3.jpg}} &
+            \subfloat[G=2.6 S=5]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma26Stop5.jpg}} &
+            \subfloat[G=2.6 S=7]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma26Stop7.jpg}} &
+            \subfloat[G=2.6 S=9]{\includegraphics[width = 1.5in]{./figures/result2AfterGamma26Stop9.jpg}}
+            \end{tabular}
+            \caption{4 x 4}
+\end{figure}
+        % \\Solution: multiplily C into the function we get\\
+        % \begin{align}
+        % (\vec x^T -\vec c^T)  \mat C (\vec x - \vec c)+ c_0
+        % &=(\vec x^T -\vec c^T)  (\mat C\vec x - \mat C\vec c)+ c_0 \\
+        % &=  \vec x^T \mat C\vec x - \vec x^T \mat C\vec c - \vec c^T\mat C\vec x + \vec c^T\mat C\vec c + c_0  \\
+        % &=  \vec x^T \mat C\vec x - \vec c^T \mat C\vec x - \vec c^T\mat C\vec x + \vec c^T\mat C\vec c + c_0\\
+        %  &=  \vec x^T \mat C\vec x - 2\vec c^T \mat C\vec x + \vec c^T\mat C\vec c + c_0
+        % \end{align}
+        
+        % \begin{align} 
+        % f1(x)  &= \vec x^T \vec x + \vec x^T\mat B\vec x  - \vec a^T \vec x + \vec b^T \vec x\\
+        % &= \vec x^T (\mat I + \mat B) \vec x   - \vec a^T \vec x + \vec b^T \vec x \\
+        % &= \vec x^T (\mat I + \mat B) \vec x   - (\vec a^T - \vec b^T ) \vec x
+        % \end{align}
+        
+        % from (4) and (7) we can get we get \\
+        % \begin{align} 
+        % \mat I + \mat B = \mat C \\
+        % \vec a^T - \vec b^T = 2\vec c^T \mat C\\
+        % 0=\vec c^T\mat C\vec c + c_0
+        % \end{align}
+        
+        % \begin{align}
+        %     \mat C &= \begin{bmatrix}
+        %     4 & -1 \\
+        %     -1 & 4 
+        %     \end{bmatrix} \\
+        %     \vec c &= \begin{bmatrix}
+        %         \frac{1}{6} \\
+        %         \frac{1}{6} 
+        %     \end{bmatrix}\\
+        %     c_0 &= -\frac{1}{6} 
+        % \end{align}
+        
+    
+    \end{enumerate}
+    
+
+
+
+
+
+
+\end{document}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
