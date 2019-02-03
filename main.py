@@ -2,59 +2,6 @@ import sys
 import numpy as np
 from PNM import *
 
-def CreateAndSavePFM(out_path):
-    width = 512
-    height = 512
-    numComponents = 3
-
-    img_out = np.empty(shape=(width, height, numComponents), dtype=np.float32)
-    
-    for y in range(height):
-        for x in range(width):
-            img_out[y,x,:] = 1.0
-
-    writePFM(out_path, img_out)
-
-def LoadAndSavePPM(in_path, out_path):
-    img_in = loadPPM(in_path)
-    img_out = np.empty(shape=img_in.shape, dtype=img_in.dtype)
-    height,width,_ = img_in.shape # Retrieve height and width
-    for y in range(height):
-        for x in range(width):
-            img_out[y,x,:] = img_in[y,x,:] # Copy pixels
-
-    writePPM(out_path, img_out)
-
-def LoadAndSavePFM(in_path, out_path):
-    img_in = loadPFM(in_path)
-    img_out = np.empty(shape=img_in.shape, dtype=img_in.dtype)
-    height,width,_ = img_in.shape # Retrieve height and width
-    for y in range(height):
-        for x in range(width):
-            img_out[y,x,:] = img_in[y,x,:] # Copy pixels
-
-    writePFM(out_path, img_out)
-
-def LoadPPMAndSavePFM(in_path, out_path):
-    img_in = loadPPM(in_path)
-    img_out = np.empty(shape=img_in.shape, dtype=np.float32)
-    height,width,_ = img_in.shape
-    for y in range(height):
-        for x in range(width):
-            img_out[y,x,:] = img_in[y,x,:]/255.0
-
-    writePFM(out_path, img_out)
-            
-def LoadPFMAndSavePPM(in_path, out_path):
-    img_in = loadPFM(in_path)
-    img_out = np.empty(shape=img_in.shape, dtype=np.float32)
-    height,width,_ = img_in.shape
-    for y in range(height):
-        for x in range(width):
-            img_out[y,x,:] = img_in[y,x,:] * 255.0
-
-    writePPM(out_path, img_out.astype(np.uint8))
-
 
 ######################################### CODE START FROM HERE #########################################
 
@@ -134,6 +81,7 @@ def Assemble_HDR():
     writePFM('../AssemblePFM.pfm', F)
 
 
+# linear scale on HDR
 def linear_scale(F):
 
     height, width, channel = F.shape
@@ -155,7 +103,7 @@ def linear_scale(F):
 
     return F
 
-
+# exponential scale on HDR
 def exp_scale(F, stop):
 
     height, width, channel = F.shape
@@ -171,6 +119,7 @@ def exp_scale(F, stop):
     return F
 
 
+# gamma function on HDR
 def gamma_scale(F, gam, stop):
 
     height, width, channel = F.shape
@@ -193,14 +142,17 @@ if '__main__' == __name__:
     height, width, channel = F.shape
     # print F
 
+    # parameter settings
     gam = 2.6
     exp_stop = 1
     gam_stop = 2
 
+    # correction pipline
     F = linear_scale(F)
     F = exp_scale(F, exp_stop)
     F = gamma_scale(F, gam, gam_stop)
 
+    # convert pfm to ppm
     for h in range(height):
         for w in range(width):
             for ch in range(3):
